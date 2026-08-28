@@ -1,0 +1,15 @@
+{
+  "learners": {
+    "demo": {
+      "id": "demo",
+      "name": "Justine",
+      "level": 4,
+      "xp": 180,
+      "mastery": 60,
+      "streak": 4,
+      "completed": [],
+      "attempts": [],
+      "createdAt": "2026-08-28T00:00:00.000Z"
+    }
+  }
+}
