@@ -48,4 +48,76 @@
   <div id="toast" class="toast" role="status"></div>
   <script src="script.js"></script>
 </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071e3c" />
+    <title>CalcFlow — See calculus click</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <button class="brand" data-view="home" aria-label="Go home"><span class="brand-mark">∫</span>CalcFlow</button>
+        <nav aria-label="Primary navigation">
+          <button class="nav-link active" data-view="home">Journey</button>
+          <button class="nav-link" data-view="learn">Learn</button>
+          <button class="nav-link" data-view="practice">Practice</button>
+          <button class="nav-link" data-view="progress">Progress</button>
+        </nav>
+        <button class="lost-button" id="lost-button"><span>😵</span> I'm lost</button>
+      </header>
+
+      <main>
+        <section class="view active" id="home">
+          <div class="home-hero">
+            <div class="hero-copy">
+              <p class="eyebrow">FRIDAY'S SMALL STEP</p>
+              <h1>Good afternoon, <em>Justine.</em></h1>
+              <p class="intro">You don't have to finish calculus today. Let's make one idea click.</p>
+              <article class="mission-card">
+                <div class="mission-top"><span class="mission-icon">✦</span><span>Today’s mission</span><span class="time">15 min</span></div>
+                <h2>Recover the original function</h2>
+                <p>Antiderivatives · The power rule</p>
+                <div class="progress-row"><div class="track"><span style="width:60%"></span></div><b>60%</b></div>
+                <button class="primary" data-view="learn">Continue learning <span>→</span></button>
+              </article>
+            </div>
+            <div class="hero-art" aria-label="A visual representation of an antiderivative curve">
+              <div class="sun"></div><div class="cloud cloud-one"></div><div class="cloud cloud-two"></div>
+              <svg viewBox="0 0 530 390" role="img" aria-label="A rising curve in a mountain landscape">
+                <path class="mountain back" d="M0 270 108 164l65 68 84-109 111 144 70-73 92 84v112H0Z" />
+                <path class="mountain front" d="M0 311 105 230l70 71 109-132 105 116 55-67 86 93v79H0Z" />
+                <path class="curve" d="M45 328 C122 331, 151 313, 187 276 S241 170, 303 146 S385 90, 471 45" />
+                <circle class="curve-dot" cx="303" cy="146" r="9" /><circle class="curve-dot small" cx="187" cy="276" r="6" />
+              </svg>
+              <div class="art-label label-one"><strong>f(x)</strong><span>original curve</span></div>
+              <div class="art-label label-two"><strong>f′(x)</strong><span>how it changes</span></div>
+              <p class="art-caption">Every slope has a story. Let’s trace it back.</p>
+            </div>
+          </div>
+          <div class="home-grid">
+            <article class="review-card"><div><p class="eyebrow">QUICK REVIEW · 5 MIN</p><h3>Strengthen one loose brick.</h3><p>You stumbled on fraction coefficients last time. Two small problems can help.</p></div><button class="text-button" data-view="practice">Review now <span>→</span></button></article>
+            <article class="world-card"><div class="world-head"><div><p class="eyebrow">YOUR WORLD</p><h3>The journey so far</h3></div><button class="text-button" data-view="progress">View map →</button></div><div class="world-path"><span class="node done">✓<i>Algebra<br>Village</i></span><span class="path-line"></span><span class="node done">✓<i>Function<br>Forest</i></span><span class="path-line active-line"></span><span class="node current">◉<i>Integration<br>Ocean</i></span><span class="path-line"></span><span class="node locked">⌁<i>Derivative<br>Mountain</i></span></div></article>
+          </div>
+        </section>
+
+        <section class="view lesson-view" id="learn">
+          <div class="lesson-nav"><button class="back" data-view="home">← Journey</button><span>LESSON 01 OF 03</span><div class="mini-track"><i></i><i></i><i class="empty"></i></div></div>
+          <div class="lesson-layout"><div class="lesson-copy"><p class="eyebrow">THE BIG IDEA</p><h1>Can we <em>reverse</em><br>the change?</h1><p class="lead">A derivative tells us how a function changes. An <b>antiderivative</b> helps us recover the function that came before it.</p><div class="tutor-note"><span>✦</span><p>Think of it like seeing tire tracks and working backward to imagine the car’s path.</p></div><button class="primary" id="reveal-rule">Show me how it works <span>↓</span></button></div>
+          <div class="lab-card"><div class="lab-title"><span>INTERACTIVE VISUAL</span><b>Change the exponent</b></div><div class="equation"><span>f′(x) =</span><strong id="derivative">6x<sup>2</sup></strong></div><div class="graph-box"><svg viewBox="0 0 430 220"><path class="axis" d="M38 16V194M20 168H414"/><path class="grid" d="M38 55H414M38 94H414M38 133H414M105 16V194M172 16V194M239 16V194M306 16V194M373 16V194"/><path class="graph-line" id="graph-line" d="M53 166 C120 166 151 161 179 144 S232 79 293 60 S358 34 403 28"/></svg><span class="graph-tag">rate of change</span></div><label for="power">Power <output id="power-output">2</output></label><input id="power" type="range" min="1" max="5" value="2" /><p class="lab-tip">Move the slider. The curve changes as its exponent changes.</p></div></div>
+          <div class="rule-panel" id="rule-panel"><p class="eyebrow">THE POWER RULE, BACKWARDS</p><div class="rule-steps"><div><b>1</b><span>Raise the power<br><code>x<sup>2</sup> → x<sup>3</sup></code></span></div><div><b>2</b><span>Divide by the new power<br><code>6x<sup>3</sup> ÷ 3 = 2x<sup>3</sup></code></span></div><div><b>3</b><span>Keep the family of answers<br><code>2x<sup>3</sup> + C</code></span></div></div><button class="primary" data-view="practice">Try a guided problem <span>→</span></button></div>
+        </section>
+
+        <section class="view practice-view" id="practice"><div class="practice-header"><p class="eyebrow">GUIDED PRACTICE · PROBLEM 1 OF 5</p><h1>Recover the lost <em>function.</em></h1><p>Find an antiderivative for the function below.</p></div><div class="problem-card"><div class="problem-label">THE CLUE</div><div class="big-equation">∫ 6x<sup>2</sup> dx</div><div class="answer-area"><label for="answer">Your answer</label><div class="input-row"><input id="answer" autocomplete="off" placeholder="Type your answer…" /><button class="primary" id="check-answer">Check it <span>→</span></button></div><p class="answer-hint">Tip: Use <code>x^3</code> if your keyboard doesn't have superscripts.</p></div><div class="feedback" id="feedback" aria-live="polite"></div><button class="hint-button" id="hint-button">💡 I need a hint</button><div class="hint" id="hint">If differentiating <b>x³</b> gives <b>3x²</b>, what number times x³ would give you <b>6x²</b>?</div></div></section>
+
+        <section class="view progress-view" id="progress"><div class="progress-head"><p class="eyebrow">YOUR CALCULUS JOURNEY</p><h1>Small steps are still <em>movement.</em></h1><p>You’ve shown up for 4 learning sessions. Your world is becoming yours.</p></div><div class="stats"><article><b>4</b><span>learning sessions</span></article><article><b>180</b><span>kindly-earned XP</span></article><article><b>2</b><span>concepts explored</span></article></div><div class="map-card"><div class="map-sky"><span class="map-moon"></span><span class="map-star s1">✦</span><span class="map-star s2">✦</span><span class="map-star s3">✦</span></div><div class="map-route"><div class="map-stop complete"><span>⌂</span><b>Algebra Village</b><small>Complete</small></div><div class="route-line complete"></div><div class="map-stop complete"><span>♧</span><b>Function Forest</b><small>Complete</small></div><div class="route-line current-line"></div><div class="map-stop current"><span>∫</span><b>Integration Ocean</b><small>60% restored</small></div><div class="route-line"></div><div class="map-stop future"><span>⌁</span><b>Derivative Mountain</b><small>On the horizon</small></div></div></div></section>
+      </main>
+    </div>
+    <div class="modal-backdrop" id="lost-modal" aria-hidden="true"><div class="lost-modal" role="dialog" aria-modal="true" aria-labelledby="lost-title"><button class="close" id="close-modal" aria-label="Close">×</button><span class="modal-icon">😵</span><p class="eyebrow">YOU'RE NOT BEHIND</p><h2 id="lost-title">Let’s find your next small step.</h2><p>What feels hardest right now?</p><div class="lost-options"><button>I don’t know where to start <span>→</span></button><button>I forgot the basics <span>→</span></button><button>I keep getting this wrong <span>→</span></button></div></div></div>
+    <script src="script.js"></script>
+  </body>
 </html>
