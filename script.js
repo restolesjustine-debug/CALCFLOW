@@ -1,36 +1,54 @@
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => [...document.querySelectorAll(selector)];
-const state = JSON.parse(localStorage.getItem('calcflow-state') || '{"xp":180,"completed":[],"mastery":60}');
-const problems = [
-  { prompt: 'Find an antiderivative.', expression: '∫ 6x<sup>2</sup> dx', answer: '2x^3+c', hint: 'Raise 2 to 3. What is 6 ÷ 3?', work: 'x² becomes x³. Then 6 ÷ 3 = 2, so the answer is <b>2x³ + C</b>.' },
-  { prompt: 'Rebuild the original function.', expression: '∫ 12x<sup>3</sup> dx', answer: '3x^4+c', hint: 'The new exponent is 4. Divide 12 by 4.', work: 'x³ becomes x⁴. Then 12 ÷ 4 = 3, so the answer is <b>3x⁴ + C</b>.' },
-  { prompt: 'Give this function a family.', expression: '∫ 4x dx', answer: '2x^2+c', hint: 'x is x¹. Raise 1 to 2, then divide 4 by 2.', work: 'x¹ becomes x². Then 4 ÷ 2 = 2, so the answer is <b>2x² + C</b>.' },
-  { prompt: 'Watch the coefficient carefully.', expression: '∫ 15x<sup>4</sup> dx', answer: '3x^5+c', hint: 'The new exponent is 5. What is 15 ÷ 5?', work: 'x⁴ becomes x⁵. Then 15 ÷ 5 = 3, so the answer is <b>3x⁵ + C</b>.' },
-  { prompt: 'One final gentle challenge.', expression: '∫ 8x<sup>3</sup> dx', answer: '2x^4+c', hint: 'Bring 3 up to 4 and balance 8 by dividing by 4.', work: 'x³ becomes x⁴. Then 8 ÷ 4 = 2, so the answer is <b>2x⁴ + C</b>.' }
-];
-let currentProblem = 0;
-function save() { localStorage.setItem('calcflow-state', JSON.stringify(state)); }
-function toast(message) { const box = $('#toast'); box.textContent = message; box.classList.add('show'); setTimeout(() => box.classList.remove('show'), 2600); }
-function showView(id) { $$('.view').forEach(view => view.classList.toggle('active', view.id === id)); $$('.side-nav button').forEach(button => button.classList.toggle('active', button.dataset.view === id)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-$$('[data-view]').forEach(button => button.addEventListener('click', () => showView(button.dataset.view)));
+const views = document.querySelectorAll('.view');
+const nav = document.querySelectorAll('[data-view]');
+function showView(id) {
+  views.forEach(view => view.classList.toggle('active', view.id === id));
+  document.querySelectorAll('.nav-link').forEach(link => link.classList.toggle('active', link.dataset.view === id));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+nav.forEach(button => button.addEventListener('click', () => showView(button.dataset.view)));
 
-const lessonCurves = { 1: 'M53 151L398 43', 2: 'M53 169C121 169 150 165 178 146S232 76 294 57S358 32 398 27', 3: 'M53 170C164 170 213 167 244 130S278 48 398 25', 4: 'M53 170C225 170 254 167 282 109S312 35 398 25', 5: 'M53 170C264 170 290 163 314 95S340 30 398 25' };
-$('#lesson-power').addEventListener('input', (event) => { const n = event.target.value; $('#lesson-power-output').textContent = n; $('#lesson-derivative').innerHTML = `6x<sup>${n}</sup>`; $('#lesson-curve').setAttribute('d', lessonCurves[n]); });
-$('#start-lesson').addEventListener('click', () => { $('#rule-reveal').classList.add('visible'); $('#rule-reveal').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+const power = document.querySelector('#power');
+const derivative = document.querySelector('#derivative');
+const output = document.querySelector('#power-output');
+const graph = document.querySelector('#graph-line');
+const curves = {
+  1: 'M53 145 L403 45',
+  2: 'M53 166 C120 166 151 161 179 144 S232 79 293 60 S358 34 403 28',
+  3: 'M53 170 C177 170 212 168 242 135 S278 51 403 24',
+  4: 'M53 171 C223 171 255 168 282 118 S314 38 403 24',
+  5: 'M53 171 C263 171 292 164 315 100 S341 31 403 24'
+};
+power.addEventListener('input', () => {
+  const n = power.value;
+  output.textContent = n;
+  derivative.innerHTML = `6x<sup>${n}</sup>`;
+  graph.setAttribute('d', curves[n]);
+});
+document.querySelector('#reveal-rule').addEventListener('click', () => {
+  document.querySelector('#rule-panel').classList.add('visible');
+  document.querySelector('#rule-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
 
-function normalize(value) { return value.toLowerCase().replace(/\s/g, '').replaceAll('³', '^3').replaceAll('²', '^2'); }
-function renderProblem() { const problem = problems[currentProblem]; $('#problem-count').textContent = `Problem ${currentProblem + 1} of ${problems.length}`; $('#problem-prompt').textContent = problem.prompt; $('#challenge').innerHTML = problem.expression; $('#answer').value = ''; $('#feedback').className = 'feedback'; $('#workthrough').className = 'workthrough'; $('#workthrough').innerHTML = ''; $$('.practice-progress i').forEach((item, index) => item.classList.toggle('done', index < currentProblem)); }
-function checkAnswer() { const value = normalize($('#answer').value); const feedback = $('#feedback'); const problem = problems[currentProblem]; if (value === problem.answer) { feedback.className = 'feedback success'; feedback.innerHTML = '<b>That’s it! ✦</b> You made every move: raise the power, balance the coefficient, and keep + C.'; state.xp += 20; state.mastery = Math.min(100, state.mastery + 8); state.completed.push(currentProblem); save(); $('#xp-total').textContent = state.xp; $('#mastery-number').textContent = `${state.mastery}%`; toast('+20 XP · thoughtful work pays off'); setTimeout(() => { if (currentProblem < problems.length - 1) { currentProblem += 1; renderProblem(); } else { feedback.innerHTML = '<b>Session complete! ✦</b> You finished all five guided problems. Your Integration Ocean is a little more restored.'; } }, 1100); } else if (value.includes('x^') && !value.includes('+c')) { feedback.className = 'feedback warm'; feedback.innerHTML = '<b>You found the shape.</b> One more thing: antiderivatives represent a family of functions. What do we add to name that family?'; } else { feedback.className = 'feedback warm'; feedback.innerHTML = '<b>You’re close enough to learn from this.</b> Try one hint — it will point at the next move without taking it away.'; } }
-$('#check-answer').addEventListener('click', checkAnswer); $('#answer').addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
-$('#hint-button').addEventListener('click', () => { const item = problems[currentProblem]; $('#feedback').className = 'feedback hint'; $('#feedback').innerHTML = `<b>Hint:</b> ${item.hint}`; });
-$('#show-work').addEventListener('click', () => { const item = problems[currentProblem]; $('#workthrough').className = 'workthrough visible'; $('#workthrough').innerHTML = `<b>Here’s the move:</b> ${item.work}`; });
+const answer = document.querySelector('#answer');
+const feedback = document.querySelector('#feedback');
+document.querySelector('#check-answer').addEventListener('click', () => {
+  const value = answer.value.toLowerCase().replace(/\s/g, '').replace(/³/g, '^3');
+  const correct = ['2x^3+c', '2x^3+c.', '2x^3+c+0'];
+  if (correct.includes(value)) {
+    feedback.className = 'feedback show correct';
+    feedback.innerHTML = '<b>Beautiful work! ✦</b><br>You raised the exponent, divided 6 by 3, and remembered + C. That’s the whole move.';
+  } else if (value.includes('6x^3')) {
+    feedback.className = 'feedback show close';
+    feedback.innerHTML = '<b>You’re close. 👀</b><br>You raised the exponent correctly. Now divide the coefficient by the new exponent: 6 ÷ 3.';
+  } else {
+    feedback.className = 'feedback show close';
+    feedback.innerHTML = '<b>Let’s slow it down.</b><br>First increase the exponent from 2 to 3. Then ask: what coefficient differentiates into 6x²?';
+  }
+});
+answer.addEventListener('keydown', event => { if (event.key === 'Enter') document.querySelector('#check-answer').click(); });
+document.querySelector('#hint-button').addEventListener('click', () => document.querySelector('#hint').classList.toggle('visible'));
 
-function graphPath(coefficient, power) { const points = []; for (let px = 49; px <= 540; px += 5) { const x = (px - 292) / 61; const y = 165 - coefficient * (x ** power) * 10; points.push(`${px === 49 ? 'M' : 'L'}${px.toFixed(1)} ${Math.max(22, Math.min(300, y)).toFixed(1)}`); } return points.join(' '); }
-function updateLab() { const coefficient = Number($('#coefficient').value) || 0; const power = Number($('#lab-power').value); const reverse = $('.mode.active').dataset.mode === 'reverse'; const displayCoefficient = reverse ? coefficient / (power + 1) : coefficient * power; const displayPower = reverse ? power + 1 : Math.max(0, power - 1); const sign = displayCoefficient === 1 ? '' : displayCoefficient === -1 ? '−' : String(displayCoefficient); $('#lab-power-display').textContent = power; $('#graph-expression').textContent = `f(x) = ${coefficient}x${power === 1 ? '' : `^${power}`}`; $('#lab-result').innerHTML = `${sign}${displayPower === 0 ? '' : `x<sup>${displayPower}</sup>`}${reverse ? ' + C' : ''}`; $('#result-label').textContent = reverse ? 'Antiderivative' : 'Derivative'; $('#lab-path').setAttribute('d', graphPath(coefficient, power)); $('#result-copy').textContent = reverse ? `Raise the power to ${power + 1}, then divide ${coefficient} by ${power + 1}.` : `Multiply ${coefficient} by ${power}, then lower the power by one.`; $('#lab-explain-title').textContent = reverse ? 'The power stepped up.' : 'The power came down front.'; $('#lab-explain-copy').textContent = reverse ? `To reverse ${coefficient}x^${power}, make the power ${power + 1} and balance the coefficient by dividing by ${power + 1}.` : `For ${coefficient}x^${power}, multiplying ${coefficient} by the power ${power} gives ${coefficient * power}; then the power drops to ${Math.max(0, power - 1)}.`; }
-$('#coefficient').addEventListener('input', updateLab); $('#lab-power').addEventListener('input', updateLab); $$('.mode').forEach(button => button.addEventListener('click', () => { $$('.mode').forEach(item => item.classList.remove('active')); button.classList.add('active'); updateLab(); }));
-
-const modal = $('#lost-modal'); function closeModal() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
-function openModal() { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); $('#lost-response').innerHTML = ''; }
-$('#lost-button').addEventListener('click', openModal); $('#mobile-lost').addEventListener('click', openModal); $('#close-modal').addEventListener('click', closeModal); modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
-$$('[data-lost]').forEach(button => button.addEventListener('click', () => { const responses = { basics: 'That makes sense. Let’s begin with a 5-minute exponent refresh — no pressure.', start: 'Start here: one guided antiderivative. You only need the next move, not the whole chapter.', mistake: 'Let’s look for the pattern in your mistake together. Practice gives specific hints.', overwhelmed: 'You can stop here and come back. Your journey will be exactly where you left it.' }; $('#lost-response').innerHTML = `<b>A small plan:</b> ${responses[button.dataset.lost]} <button data-view="${button.dataset.lost === 'mistake' ? 'practice' : 'learn'}">Take me there →</button>`; $('#lost-response [data-view]').addEventListener('click', (event) => { closeModal(); showView(event.target.dataset.view); }); }));
-$('#xp-total').textContent = state.xp; $('#mastery-number').textContent = `${state.mastery}%`; renderProblem(); updateLab();
+const modal = document.querySelector('#lost-modal');
+document.querySelector('#lost-button').addEventListener('click', () => { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); });
+document.querySelector('#close-modal').addEventListener('click', () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); });
+modal.addEventListener('click', event => { if (event.target === modal) document.querySelector('#close-modal').click(); });
